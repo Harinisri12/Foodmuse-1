@@ -1,3 +1,4 @@
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
@@ -7,12 +8,11 @@ import { Navbar } from "./components/Navbar";
 import { UserProvider, useUser } from "./context/UserContext";
 import { Login } from './components/Login';
 import { Register } from './components/Register';
-const API_KEY = "76b0f7e32b3b4733b411c4724d5ebe65";
+const API_KEY = "a7386e838ff4469b94c605428a122059";
 
 function IngredientInput({ onGenerateRecipes }: { onGenerateRecipes: (ingredients: string[]) => void }) {
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [currentIngredient, setCurrentIngredient] = useState("");
-
   const addIngredient = () => {
     if (currentIngredient.trim()) {
       setIngredients([...ingredients, currentIngredient.trim()]);
@@ -61,9 +61,17 @@ function IngredientInput({ onGenerateRecipes }: { onGenerateRecipes: (ingredient
   );
 }
 
-function FilterCard({ onFilterDuration, onFilterDishTypes,onFilterCuisines }: { onFilterDuration: (duration: string) => void, onFilterDishTypes: (selectedDishTypes: string[]) => void,onFilterCuisines: (selectedCuisines: string[]) => void }) {
+function FilterCard({
+  onFilterDuration,
+  onFilterDishTypes,
+  onFilterCuisine
+}: { 
+  onFilterDuration: (duration: string) => void;
+  onFilterDishTypes: (selectedDishTypes: string[]) => void;
+  onFilterCuisine: (selectedCuisine: string) => void;
+}) {
   const [selectedDishTypes, setSelectedDishTypes] = useState<string[]>([]);
-  const [selectedCuisines, setSelectedCuisines] = useState<string[]>([]);
+  const [selectedCuisine, setSelectedCuisine] = useState<string>("");
 
   const dishTypes = [
     "main course", "side dish", "dessert", "appetizer", "salad", "bread", 
@@ -72,13 +80,12 @@ function FilterCard({ onFilterDuration, onFilterDishTypes,onFilterCuisines }: { 
   ];
 
   const cuisines = [
-    "African", "Asian", "American", "British", "Cajun", "Caribbean", "Chinese",
-    "Eastern European", "European", "French", "German", "Greek", "Indian", 
-    "Irish", "Italian", "Japanese", "Jewish", "Korean", "Latin American", 
-    "Mediterranean", "Mexican", "Middle Eastern", "Nordic", "Southern", 
-    "Spanish", "Thai", "Vietnamese"
+    "African", "Asian", "American", "British", "Cajun", "Caribbean", 
+    "Chinese", "Eastern European", "European", "French", "German", "Greek", 
+    "Indian", "Irish", "Italian", "Japanese", "Jewish", "Korean", "Latin American", 
+    "Mediterranean", "Mexican", "Middle Eastern", "Nordic", "Southern", "Spanish", 
+    "Thai", "Vietnamese"
   ];
-
 
   const handleDishTypeChange = (dishType: string) => {
     setSelectedDishTypes((prev) => {
@@ -91,89 +98,89 @@ function FilterCard({ onFilterDuration, onFilterDishTypes,onFilterCuisines }: { 
   };
 
   const handleCuisineChange = (cuisine: string) => {
-    setSelectedCuisines((prev) => {
-      if (prev.includes(cuisine)) {
-        return prev.filter((item) => item !== cuisine);
-      } else {
-        return [...prev, cuisine];
-      }
-    });
+    setSelectedCuisine(cuisine);
+    onFilterCuisine(cuisine);
   };
-
-
 
   const handleApplyFilter = () => {
     onFilterDishTypes(selectedDishTypes);
-    onFilterCuisines(selectedCuisines);
-
   };
 
+
   return (
-    <div className="bg-white p-6 rounded-lg shadow-xl mb-6 w-full max-w-4xl mx-auto">
-      <h2 className="text-2xl font-semibold text-gray-900 mb-4">Filter Recipes</h2>
+    <div className="bg-white p-8 mb-6 w-full mx-auto">
+  <h2 className="text-2xl font-semibold mb-4">Filter Recipes</h2>
+
+  <div className="flex justify-between mb-6 w-full">
+    {/* Left side: Duration Dropdown */}
+    <div className="w-1/2 pr-4">
       <p className="text-sm text-gray-600 mb-4">Choose your preferred cooking duration:</p>
       <select
         onChange={(e) => onFilterDuration(e.target.value)}
-        className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+        className="w-full px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-gray-700"
       >
         <option value="">Select Duration</option>
         <option value="under20">Under 20 minutes</option>
         <option value="above20">Above 20 minutes</option>
       </select>
-
-      <div className="mt-4">
-        <p className="text-sm text-gray-600 mb-2">Select Dish Types:</p>
-        <div className="flex flex-wrap gap-4 mb-4">
-          {dishTypes.map((dishType) => (
-            <div key={dishType} className="flex items-center">
-              <input
-                type="checkbox"
-                id={dishType}
-                checked={selectedDishTypes.includes(dishType)}
-                onChange={() => handleDishTypeChange(dishType)}
-                className="h-4 w-4 text-emerald-600 border-gray-300 rounded"
-              />
-              <label htmlFor={dishType} className="ml-2 text-gray-600">{dishType}</label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-4">
-        <p className="text-sm text-gray-600 mb-2">Select Cuisines:</p>
-        <div className="flex flex-wrap gap-4 mb-4">
-          {cuisines.map((cuisine) => (
-            <div key={cuisine} className="flex items-center">
-              <input
-                type="checkbox"
-                id={cuisine}
-                checked={selectedCuisines.includes(cuisine)}
-                onChange={() => handleCuisineChange(cuisine)}
-                className="h-4 w-4 text-emerald-600 border-gray-300 rounded"
-              />
-              <label htmlFor={cuisine} className="ml-2 text-gray-600">{cuisine}</label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-4 text-center">
-        <button
-          onClick={handleApplyFilter}
-          className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
-        >
-          Apply Filters
-        </button>
-        <button
-          onClick={() => {onFilterDishTypes([]);onFilterCuisines([]);}} // Reset filter
-          className="ml-2 text-sm text-emerald-600 hover:text-emerald-800 focus:outline-none transition-colors"
-        >
-          Reset Filter
-        </button>
-      </div>
     </div>
+
+    {/* Right side: Cuisine Dropdown */}
+    <div className="w-1/2 pl-4">
+      <p className="text-sm text-gray-600 mb-4">Select Cuisine:</p>
+      <select
+        value={selectedCuisine}
+        onChange={(e) => handleCuisineChange(e.target.value)}
+        className="w-full px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-gray-700"
+      >
+        <option value="">Select Cuisine</option>
+        {cuisines.map((cuisine) => (
+          <option key={cuisine} value={cuisine}>{cuisine}</option>
+        ))}
+      </select>
+    </div>
+  </div>
+
+  {/* Dish Type Section */}
+  <div className="mt-6 w-full">
+    <p className="text-sm text-gray-600 mb-2">Select Dish Types:</p>
+    <div className="flex flex-wrap gap-6 mb-6 w-full">
+      {dishTypes.map((dishType) => (
+        <div key={dishType} className="flex items-center">
+          <input
+            type="checkbox"
+            id={dishType}
+            checked={selectedDishTypes.includes(dishType)}
+            onChange={() => handleDishTypeChange(dishType)}
+            className="h-5 w-5 text-emerald-600 border-gray-300 rounded-md focus:ring-2 focus:ring-emerald-500 transition-all"
+          />
+          <label htmlFor={dishType} className="ml-3 text-gray-700">{dishType}</label>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  {/* Buttons */}
+  <div className="mt-6 text-center w-full">
+    <button
+      onClick={handleApplyFilter}
+      className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
+    >
+      Apply Filters
+    </button>
+    <button
+      onClick={() => { setSelectedDishTypes([]); setSelectedCuisine(""); onFilterDishTypes([]); onFilterCuisine(""); }}
+      className="ml-4 text-sm text-emerald-600 hover:text-emerald-800 focus:outline-none transition-colors"
+    >
+      Reset Filter
+    </button>
+  </div>
+</div>
+
+  
   );
 }
+
 
 function AppContent() {
   const { user, setUser, tempRegistrationData, setTempRegistrationData } = useUser();
@@ -182,7 +189,11 @@ function AppContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filteredRecipes, setFilteredRecipes] = useState<any[]>([]);
+  const [selectedDishTypes, setSelectedDishTypes] = useState<string[]>([]);
+  const [selectedCuisine, setSelectedCuisine] = useState<string>("");
 
+
+  
   const handleLogin = (email: string) => {
     if (tempRegistrationData && tempRegistrationData.email === email) {
       setUser(tempRegistrationData);
@@ -251,12 +262,9 @@ function AppContent() {
           nutrition: nutrition.data,
           cookingTime: detailedRecipe.data.cookingMinutes || detailedRecipe.data.readyInMinutes,
           dishTypes: detailedRecipe.data.dishTypes || [],
-          cuisines: detailedRecipe.data.cuisines || []
-           // Add dishTypes here
+          cuisines: detailedRecipe.data.cuisines || [] // Added cuisine data
         };
       });
-
-      
 
       const recipesWithNutrition = await Promise.all(recipePromises);
       setRecipes(recipesWithNutrition);
@@ -277,28 +285,30 @@ function AppContent() {
       setFilteredRecipes(recipes); // Reset the filter
     }
   };
-  const filterRecipesByDishTypes = (selectedDishTypes: string[]) => {
-    if (selectedDishTypes.length > 0) {
-      setFilteredRecipes(
-        recipes.filter((recipe) =>
-          recipe.dishTypes.some((type: string) => selectedDishTypes.includes(type))
-        )
-      );
-    } else {
-      setFilteredRecipes(recipes); // No filter, show all recipes
-    }
+
+  const filterRecipesByCuisine = (cuisine: string) => {
+    setSelectedCuisine(cuisine);
+    filterRecipesByCuisineAndDishTypes(selectedDishTypes, cuisine);
   };
-  const filterRecipesByCuisines = (selectedCuisines: string[]) => {
-    if (selectedCuisines.length > 0) {
-      setFilteredRecipes(
-        recipes.filter((recipe) =>
-          recipe.cuisines.some((cuisine: string) => selectedCuisines.includes(cuisine))
-        )
-      );
-    } else {
-      setFilteredRecipes(recipes); // No filter, show all recipes
-    }
-  }
+
+  const filterRecipesByCuisineAndDishTypes = (selectedDishTypes: string[], selectedCuisine: string) => {
+    setFilteredRecipes(
+      recipes.filter((recipe) => {
+        const matchesDishType = selectedDishTypes.length === 0 || recipe.dishTypes.some((type: string) => selectedDishTypes.includes(type));
+        const matchesCuisine = !selectedCuisine || recipe.cuisines?.includes(selectedCuisine);
+
+        return matchesDishType && matchesCuisine;
+      })
+    );
+  };
+
+  const filterRecipesByDishTypes = (selectedDishTypes: string[]) => {
+    setSelectedDishTypes(selectedDishTypes);
+    filterRecipesByCuisineAndDishTypes(selectedDishTypes, selectedCuisine);
+  };
+
+
+  
   
   const openRecipeInNewTab = async (recipe: any) => {
     try {
@@ -466,13 +476,15 @@ function AppContent() {
         </div>
   
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-2xl font-semibold mb-4">What's in your kitchen?</h2>
+          <h2 className="text-2xl font-semibold  mb-4">What's in your kitchen?</h2>
           <IngredientInput onGenerateRecipes={fetchRecipes} />
           <FilterCard
-            onFilterDuration={filterRecipesByDuration}
-            onFilterDishTypes={filterRecipesByDishTypes}
-            onFilterCuisines={filterRecipesByCuisines}
-          />
+  onFilterDuration={filterRecipesByDuration}
+  onFilterDishTypes={filterRecipesByDishTypes}
+  onFilterCuisine={filterRecipesByCuisine} // Pass cuisine filter handler
+/>
+
+
   
           {loading && <p className="text-emerald-600">Loading recipes...</p>}
           {error && <p className="text-red-600">{error}</p>}
